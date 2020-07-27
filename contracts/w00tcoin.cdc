@@ -1,19 +1,19 @@
-// BrewCoin is a fungible token used for testing
+// W00tCoin is a fungible token used for testing
 // marketplace purchases
-
-// Flow Playground URL: https://play.onflow.org/b8fa9d7e-c6e0-4fca-9e5f-ed806ebd0106
-
-// Emulator Account Ref:
-// Account 1 - 0x01cf0e2f2f715450
-// Account 2 - 0x179b6b1cb6755e31
-// Account 3 - 0xf3fcd2c1a78f5eee
 
 // Import the Flow FungibleToken interface
 import FungibleToken from 0xee82856bf20e2aa6
 
-pub contract BrewCoin: FungibleToken {
+// Contract Deployment:
+// Acct 1 - 0x01cf0e2f2f715450 - w00tcoin.cdc
+// Acct 2 - 0x179b6b1cb6755e31 - rocks.cdc
+// Acct 3 - 0xf3fcd2c1a78f5eee - marketplace.cdc
+// Acct 4 - 0xe03daebed8ca0615 - onflow/NonFungibleToken.cdc
+//
 
-    // Total supply of all BrewCoins in existence.
+pub contract W00tCoin: FungibleToken {
+
+    // Total supply of all W00tCoins in existence.
     pub var totalSupply: UFix64
 
     // Event that is emitted when the contract is created
@@ -84,7 +84,7 @@ pub contract BrewCoin: FungibleToken {
         // been consumed and therefore can be destroyed.
         //
         pub fun deposit(from: @FungibleToken.Vault) {
-            let vault <- from as! @BrewCoin.Vault
+            let vault <- from as! @W00tCoin.Vault
             self.balance = self.balance + vault.balance
             emit TokensDeposited(amount: vault.balance, to: self.owner?.address)
             vault.balance = 0.0
@@ -92,7 +92,7 @@ pub contract BrewCoin: FungibleToken {
         }
 
         destroy() {
-            BrewCoin.totalSupply = BrewCoin.totalSupply - self.balance
+            W00tCoin.totalSupply = W00tCoin.totalSupply - self.balance
         }
     }
 
@@ -141,12 +141,12 @@ pub contract BrewCoin: FungibleToken {
         // Function that mints new tokens, adds them to the total supply,
         // and returns them to the calling context
         //
-        pub fun mintTokens(amount: UFix64): @BrewCoin.Vault {
+        pub fun mintTokens(amount: UFix64): @W00tCoin.Vault {
             pre {
                 amount > UFix64(0): "Amount minted must be greater than zero"
                 amount <= self.allowedAmount: "Amount minted must be less than the allowed amount"
             }
-            BrewCoin.totalSupply = BrewCoin.totalSupply + amount
+            W00tCoin.totalSupply = W00tCoin.totalSupply + amount
             self.allowedAmount = self.allowedAmount - amount
             emit TokensMinted(amount: amount)
             return <-create Vault(balance: amount)
@@ -172,38 +172,38 @@ pub contract BrewCoin: FungibleToken {
         // the totalSupply in the Vault destructor
         //
         pub fun burnTokens(from: @FungibleToken.Vault) {
-            let vault <- from as! @BrewCoin.Vault
+            let vault <- from as! @W00tCoin.Vault
             let amount = vault.balance
             destroy vault
             emit TokensBurned(amount: amount)
         }
     }
 
-    // The init function initializes the fields for the BrewCoin contract.
+    // The init function initializes the fields for the W00tCoin contract.
     init() {
         self.totalSupply = 1000.0
 
         // Create the Vault with the total supply of tokens and save it in storage
         let vault <-create Vault(balance: self.totalSupply)
-        self.account.save(<-vault, to: /storage/BrewCoinVault)
+        self.account.save(<-vault, to: /storage/W00tCoinVault)
 
         // Create a public capability to the stored Vault that only exposes
         // the 'deposit' method through the 'Receiver' interface
         //
         self.account.link<&{FungibleToken.Receiver}>(
-            /public/BrewCoinReceiver,
-            target: /storage/BrewCoinVault
+            /public/W00tCoinReceiver,
+            target: /storage/W00tCoinVault
         )
 
         // Create a public capability to the stored Vault that only exposes
         // the 'balance' field through the 'Balance' interface
-        self.account.link<&BrewCoin.Vault{FungibleToken.Balance}>(
-            /public/BrewCoinBalance,
-            target: /storage/BrewCoinVault
+        self.account.link<&W00tCoin.Vault{FungibleToken.Balance}>(
+            /public/W00tCoinBalance,
+            target: /storage/W00tCoinVault
         )
 
         let admin <-create Administrator()
-        self.account.save(<-admin, to: /storage/BrewCoinAdmin)
+        self.account.save(<-admin, to: /storage/W00tCoinAdmin)
 
         // Emit an event that shows that the contract was initialized
         emit TokensInitialized(initialSupply: self.totalSupply)

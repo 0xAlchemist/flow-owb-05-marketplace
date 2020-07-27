@@ -6,15 +6,15 @@
 // can purchase these NFTs with fungible tokens.
 //
 import FungibleToken from 0xee82856bf20e2aa6
-import NonFungibleToken from 0x01cf0e2f2f715450
-// import BrewCoin from 0x179b6b1cb6755e31
-// import Rockz from 0xe03daebed8ca0615
+import W00tCoin from 0x01cf0e2f2f715450
+import Rocks from 0x179b6b1cb6755e31
+import NonFungibleToken from 0xe03daebed8ca0615
 
 // Contract Deployment:
-// Acct 1 - 0x01cf0e2f2f715450 - onflow/NonFungibleToken.cdc
-// Acct 2 - 0x179b6b1cb6755e31 - brewcoin.cdc
-// Acct 3 - 0xf3fcd2c1a78f5eee - rockz.cdc
-// Acct 4 - 0xe03daebed8ca0615 - marketplace.cdc
+// Acct 1 - 0x01cf0e2f2f715450 - w00tcoin.cdc
+// Acct 2 - 0x179b6b1cb6755e31 - rocks.cdc
+// Acct 3 - 0xf3fcd2c1a78f5eee - marketplace.cdc
+// Acct 4 - 0xe03daebed8ca0615 - onflow/NonFungibleToken.cdc
 //
 
 pub contract Marketplace {
@@ -35,7 +35,7 @@ pub contract Marketplace {
     // that only exposes the methods that are supposed to be public
     pub resource interface SalePublic {
         pub fun purchase(
-            id: UInt64,
+            tokenID: UInt64,
             recipient: &AnyResource{NonFungibleToken.Receiver},
             buyTokens: @FungibleToken.Vault
         )
