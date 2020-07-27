@@ -1,6 +1,13 @@
-import NonFungibleToken from 0x01cf0e2f2f715450
+import NonFungibleToken from 0xe03daebed8ca0615
 
-pub contract Rockz: NonFungibleToken {
+// Contract Deployment:
+// Acct 1 - 0x01cf0e2f2f715450 - w00tcoin.cdc
+// Acct 2 - 0x179b6b1cb6755e31 - rocks.cdc
+// Acct 3 - 0xf3fcd2c1a78f5eee - marketplace.cdc
+// Acct 4 - 0xe03daebed8ca0615 - onflow/NonFungibleToken.cdc
+//
+
+pub contract Rocks: NonFungibleToken {
 
     pub var totalSupply: UInt64
 
@@ -41,7 +48,7 @@ pub contract Rockz: NonFungibleToken {
         // deposit takes an NFT and adds it to the collections dictionary
         // adds the ID to the id array
         pub fun deposit(token: @NonFungibleToken.NFT) {
-            let token <- token as! @Rockz.NFT
+            let token <- token as! @Rocks.NFT
 
             let id: UInt64 = token.id
 
@@ -84,12 +91,12 @@ pub contract Rockz: NonFungibleToken {
         pub fun mintNFT(recipient: &{NonFungibleToken.CollectionPublic}) {
 
             // Create a new NFT
-            var newNFT <- create NFT(initID: Rockz.totalSupply)
+            var newNFT <- create NFT(initID: Rocks.totalSupply + UInt64(1))
 
             // Deposit it in the recipient's Collection using their reference
             recipient.deposit(token: <-newNFT)
 
-            Rockz.totalSupply = Rockz.totalSupply + UInt64(1)
+            Rocks.totalSupply = Rocks.totalSupply + UInt64(1)
         }
     }
 
@@ -99,17 +106,17 @@ pub contract Rockz: NonFungibleToken {
 
         // create a Collection resource and save it to storage
         let collection <- create Collection()
-        self.account.save(<-collection, to: /storage/RockzCollection)
+        self.account.save(<-collection, to: /storage/RockCollection)
 
         // create a public capability for the Collection
         self.account.link<&{NonFungibleToken.CollectionPublic}>(
-            /public/RockzCollection,
-            target: /storage/RockzCollection
+            /public/RockCollection,
+            target: /storage/RockCollection
         )
 
         // create a Minter resource and save it to storage
         let minter <- create NFTMinter()
-        self.account.save(<-minter, to: /storage/RockzMinter)
+        self.account.save(<-minter, to: /storage/RockMinter)
 
         emit ContractInitialized()
     }
